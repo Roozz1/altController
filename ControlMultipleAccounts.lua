@@ -652,7 +652,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             if msg:find(" ") then
                 local args = split(msg)
 
-                if args[1]:lower() == prefix.."add" then
+                if args[1]:lower() == prefix.."master" then
                     if isOwner(author.Name) then
                         if args[2] then
                             if args[3] then
