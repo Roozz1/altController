@@ -40,7 +40,19 @@ local accounts = {
     {"jKwXJcq3GvUSRR9t", "follower"},
     {"ZmMSH2ci285cwEN1", "follower"},
     {"1ZgeDhYFKhUGNX0x", "follower"},
-    {"spf96eeW3pnm9oWf", "follower"}
+    {"spf96eeW3pnm9oWf", "follower"},
+    {"nf5VjZYKmO9ZiXDb", "follower"},
+    {"GBHsYfYVQ141akX0", "follower"},
+    {"KfLn0mEH2zZt3zo5", "follower"},
+    {"cciPyoVgAL8HT4s4", "follower"},
+    {"9DUsmmVd7AzjFoba", "follower"},
+    {"N8Y7CHCfJomoo6x8", "follower"},
+    {"Gft0e5S0HERxywaW", "follower"},
+    {"th4Vfu12Byj79qzB", "follower"},
+    {"M1ck4l5Rpi08zOrW", "follower"},
+    {"OQ5GBccWo1yqWV0a", "follower"},
+    {"OQl7UzbIlnp742Cx", "follower"},
+    {"HNttvt9uYG6DwP5U", "follower"},
 }   
 
 local commands = {
