@@ -493,6 +493,10 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
                     commands.follow.on = false
                     commands.follow.content = ""
+
+                    if isntAuthor(plr, author) then
+                        plr.Character.Humanoid:MoveTo(plr.Character.HumanoidRootPart.Position)
+                    end
                 end
             end
 
