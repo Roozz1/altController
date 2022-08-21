@@ -662,6 +662,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
         
                                         if chosenPlr ~= author.Name then
                                             table.insert(accounts, {chosenPlr, "master"})
+                                            chat("Added "..chosenPlr.." from whitelist.")
                                         end
                                     end
                                 end
@@ -669,10 +670,13 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                 if args[3]:lower() == "remove" then
                                     if findPlayer(args[2], author) then
                                         local chosenPlr = findPlayer(args[2], author)
-        
-                                        for i, v in pairs(accounts) do
-                                            if v[1] == chosenPlr then
-                                                table.remove(accounts, i)
+
+                                        if chosenPlr ~= author.Name then
+                                            for i, v in pairs(accounts) do
+                                                if v[1] == chosenPlr then
+                                                    table.remove(accounts, i)
+                                                    chat("Removed "..v[1].." from whitelist.")
+                                                end
                                             end
                                         end
                                     end
