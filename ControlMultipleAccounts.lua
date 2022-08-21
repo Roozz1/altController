@@ -645,6 +645,43 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                     commands.laugh.on = false
                 end
             end 
+
+            -----------
+
+            --follow
+            if msg:find(" ") then
+                local args = split(msg)
+
+                if args[1]:lower() == prefix.."add" then
+                    if isOwner(author.Name) then
+                        if args[2] then
+                            if args[3] then
+                                if args[3]:lower() == "add" then
+                                    if findPlayer(args[2], author) then
+                                        local chosenPlr = findPlayer(args[2], author)
+        
+                                        if chosenPlr ~= author.Name then
+                                            table.insert(accounts, {chosenPlr, "master"})
+                                        end
+                                    end
+                                end
+
+                                if args[3]:lower() == "remove" then
+                                    if findPlayer(args[2], author) then
+                                        local chosenPlr = findPlayer(args[2], author)
+        
+                                        for i, v in pairs(accounts) do
+                                            if v[1] == chosenPlr then
+                                                table.remove(accounts, i)
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
         end
     end
 end)
