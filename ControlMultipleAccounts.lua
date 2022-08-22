@@ -62,72 +62,12 @@ local commands = {
         amount = 0,
     },
 
-    say = {
-        on = false,
-        content = "",
-    },
-
-    abring = {
-        on = false,
-        content = "",
-    },
-
-    bring = {
-        on = false,
-        content = "",
-    },
-
-    goto = {
-        on = false,
-        content = "",
-    },
-
     follow = {
         on = false,
         content = "",
     },
 
-    sit = {
-        on = false,
-        content = "",
-    },
-
-    jump = {
-        on = false,
-        content = "",
-    },
-
     spamjump = {
-        on = false,
-        content = "",
-    },
-
-    kill = {
-        on = false,
-        content = "",
-    },
-
-    ws = {
-        on = false,
-        content = "",
-    },
-
-    dance = {
-        on = false,
-        content = "",
-    },
-
-    wave = {
-        on = false,
-        content = "",
-    },
-
-    cheer = {
-        on = false,
-        content = "",
-    },
-
-    laugh = {
         on = false,
         content = "",
     },
@@ -272,29 +212,41 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                     if isOwner(author.Name) then
                         if isntAuthor(plr, author) then
                             if isNumber(args[2]) then
-                                commands.spam.on = true
-                                commands.spam.content = msg:gsub(args[1].." "..args[2], "")
-                                commands.spam.amount = tonumber(args[2])
+                                if args[3] then
+                                    if args[3]:lower() == "all" then
+                                        commands.spam.on = true
+                                        commands.spam.content = msg:gsub(args[1].." "..args[2].." "..args[3], "")
+                                        commands.spam.amount = tonumber(args[2])
 
-                                task.spawn(function()
-                                    while task.wait(tonumber(commands.spam.amount)) do
-                                        if commands.spam.on == false then break end
-                    
-                                        chat(commands.spam.content)
-                                    end
-                                end)
-                            else
-                                commands.spam.on = true
-                                commands.spam.content = msg:gsub(args[1].." "..args[2], "")
-                                commands.spam.amount = 1
+                                        task.spawn(function()
+                                            while task.wait(tonumber(commands.spam.amount)) do
+                                                if commands.spam.on == false then break end
+                            
+                                                chat(commands.spam.content)
+                                            end
+                                        end)
 
-                                task.spawn(function()
-                                    while task.wait(tonumber(commands.spam.amount)) do
-                                        if commands.spam.on == false or stopPerm == true then break end
-                    
-                                        chat(commands.spam.content)
+                                    elseif args[3]:lower() ~= "all" then
+                                        if findPlayer(args[3], author) then
+                                            local cPlr = findPlayer(args[3], author)
+                                            if isRecognisedUser(cPlr) then
+                                                if plr.Name == cPlr then
+                                                    commands.spam.on = true
+                                                    commands.spam.content = msg:gsub(args[1].." "..args[2].." "..args[3], "")
+                                                    commands.spam.amount = tonumber(args[2])
+
+                                                    task.spawn(function()
+                                                        while task.wait(tonumber(commands.spam.amount)) do
+                                                            if commands.spam.on == false then break end
+                                        
+                                                            chat(commands.spam.content)
+                                                        end
+                                                    end)
+                                                end
+                                            end
+                                        end
                                     end
-                                end)
+                                end
                             end
                         end
                     end
