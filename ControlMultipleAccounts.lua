@@ -711,7 +711,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                             if args[3] == "normal" then
                                 plr.Character.Humanoid.WalkSpeed = 16
                             else
-                                plr.Character.Humanoid.WalkSpeed = tonumber(args[2])
+                                plr.Character.Humanoid.WalkSpeed = tonumber(args[3])
                             end
                         end
                     end
@@ -727,7 +727,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                     if args[3] == "normal" then
                                         plr.Character.Humanoid.WalkSpeed = 16
                                     else
-                                        plr.Character.Humanoid.WalkSpeed = tonumber(args[2])
+                                        plr.Character.Humanoid.WalkSpeed = tonumber(args[3])
                                     end
                                 end
                             end
