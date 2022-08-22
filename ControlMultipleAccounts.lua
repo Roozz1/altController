@@ -58,18 +58,14 @@ local accounts = {
 local commands = {
     spam = {
         on = false,
-        content = "",
-        amount = 0,
     },
 
     follow = {
         on = false,
-        content = "",
     },
 
     spamjump = {
         on = false,
-        content = "",
     },
 }
 
@@ -129,7 +125,7 @@ function split (inputstr, sep)
 end
 
 --find player
-function findPlayer(name, author)
+function findPlayer(name)
     local closestPlrs = {}
 
     for _, v in pairs(game.Players:GetChildren()) do
@@ -146,11 +142,12 @@ function findPlayer(name, author)
 end
 
 --is number
-local function isNumber(str)
+function isNumber(str)
     return not (str == "" or str:find("%D"))
 end
 
-local function isRecognisedUser(name)
+--is in whitelist
+function isRecognisedUser(name)
     for _, v in pairs(accounts) do
         if v[1] == name then
             return true
@@ -160,12 +157,52 @@ local function isRecognisedUser(name)
     return false
 end
 
+--all or specific
+function checkRecipient(msg, whichArg)
+    local aMsg = split(msg, " ")
+
+    if aMsg[whichArg] then
+        if aMsg[whichArg]:lower() == "all" then
+            return "all"
+        else
+            if findPlayer(aMsg[whichArg]) then
+                if isRecognisedUser(findPlayer(aMsg[whichArg])) then
+                    return findPlayer(aMsg[whichArg])
+                else
+                    return "all"
+                end
+            end
+        end
+    else
+        return "all"
+    end
+end
+
+--command start
+function commandStart(cmdName, msg, author)
+    if msg:find(" ") then
+        local args = split(msg)
+
+        if args[1]:lower() == prefix..cmdName then
+            if isOwner(author.name) then
+                if isntAuthor(plr, author) then
+                    return true
+                else
+                    return false
+                end
+            else
+                return false
+            end
+        end
+    end
+end
+
 -----------------------------------------------
 
 --//Main\\--
 ----OPTIMIZATION
 --Disable 3D Rendering
-if not isOwner(plr.name) then
+if not isOwner(plr.Name) then
     game:GetService("RunService"):Set3dRenderingEnabled(false)
 end
 
@@ -187,6 +224,21 @@ textLabel.Position = UDim2.new(0, 0, 0, 0)
 --COMMANDS
 chat("Enabled | "..plr.Name.." (@"..plr.DisplayName..")")
 
+ --[[
+   ----COMMAND EXAMPLE----
+    if commandStart("test", msg, author) then
+        if checkRecipient(msg, 2) == "all" then
+            chat("test")
+        end
+
+        if checkRecipient(msg, 2) ~= "all" then
+            if plr.Name == checkRecipient(msg, 2) then
+                chat("test")
+            end
+        end
+    end
+]]
+
 game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Connect(function(object)
     if not stopPerm then
         local msg = object.Message
@@ -202,51 +254,51 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                 end
             end
 
+            --test
+            if commandStart("test", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    chat("test")
+                end
+            
+                if checkRecipient(msg, 2) ~= "all" then
+                    if plr.Name == checkRecipient(msg, 2) then
+                        chat("test")
+                    end
+                end
+            end
+
             -----------
 
             --spam
-            if msg:lower():find(" ") then
+            if commandStart("spam", msg, author) then
                 local args = split(msg)
 
-                if args[1]:lower() == prefix.."spam" then
-                    if isOwner(author.Name) then
-                        if isntAuthor(plr, author) then
-                            if isNumber(args[2]) then
-                                if args[3] then
-                                    if args[3]:lower() == "all" then
-                                        commands.spam.on = true
-                                        commands.spam.content = msg:gsub(args[1].." "..args[2].." "..args[3], "")
-                                        commands.spam.amount = tonumber(args[2])
+                if args[2] then
+                    if isNumber(args[3]) then
+                        if args[3] then
+                            if checkRecipient(msg, 2) == "all" then
+                                commands.spam.on = true
 
-                                        task.spawn(function()
-                                            while task.wait(tonumber(commands.spam.amount)) do
-                                                if commands.spam.on == false then break end
-                            
-                                                chat(commands.spam.content)
-                                            end
-                                        end)
-
-                                    elseif args[3]:lower() ~= "all" then
-                                        if findPlayer(args[3], author) then
-                                            local cPlr = findPlayer(args[3], author)
-                                            if isRecognisedUser(cPlr) then
-                                                if plr.Name == cPlr then
-                                                    print("argh yes plr name is cplr name")
-                                                    commands.spam.on = true
-                                                    commands.spam.content = msg:gsub(args[1].." "..args[2].." "..args[3], "")
-                                                    commands.spam.amount = tonumber(args[2])
-
-                                                    task.spawn(function()
-                                                        while task.wait(tonumber(commands.spam.amount)) do
-                                                            if commands.spam.on == false then break end
-                                        
-                                                            chat(commands.spam.content)
-                                                        end
-                                                    end)
-                                                end
-                                            end
-                                        end
+                                task.spawn(function()
+                                    while task.wait(tonumber(args[3])) do
+                                        if commands.spam.on == false or stopPerm then break end
+                    
+                                        chat(msg:gsub(args[1].." "..args[2].." "..args[3], ""))
                                     end
+                                end)
+                            end
+
+                            if checkRecipient(msg, 2) ~= "all" then
+                                if plr.Name == checkRecipient(msg, 2) then
+                                    commands.spam.on = true
+
+                                    task.spawn(function()
+                                        while task.wait(tonumber(args[3])) do
+                                            if commands.spam.on == false or stopPerm then break end
+                        
+                                            chat(msg:gsub(args[1].." "..args[2].." "..args[3], ""))
+                                        end
+                                    end)
                                 end
                             end
                         end
@@ -255,30 +307,42 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             end
 
             --unspam
-            if msg:lower() == prefix.."unspam" then
-                if isOwner(author.Name) then
+            if commandStart("unspam", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
                     commands.spam.on = false
-                    commands.spam.content = ""
-                    commands.spam.amount = 0
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    if plr.Name == checkRecipient(msg, 2) then
+                        commands.spam.on = false
+                    end
                 end
             end
 
             -----------
 
             --say
-            if msg:lower():find(" ") then
-                local args = split(msg)
+            if commandStart("say", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    local args = split(msg)
 
-                if args[1]:lower() == prefix.."say" then
-                    if isOwner(author.Name) then
-                        commands.say.on = true
+                    table.remove(args, 1)
+                    table.remove(args, 1)
+
+                    if isntAuthor(plr, author) then
+                        chat(table.concat(args, " "))
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    if plr.Name == checkRecipient(msg, 2) then
+                        local args = split(msg)
+                    
                         table.remove(args, 1)
-                        commands.say.content = table.concat(args, " ")
+                        table.remove(args, 1)
 
                         if isntAuthor(plr, author) then
-                            chat(commands.say.content)
-                            commands.say.on = false
-                            commands.say.content = ""
+                            chat(table.concat(args, " "))
                         end
                     end
                 end
@@ -286,51 +350,42 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
             -----------
 
-            --bring certain alt
-            if msg:find(" ") then
-                local args = split(msg)
-
-                if args[1]:lower() == prefix.."abring" then
-                    if isOwner(author.Name) then
-                        if args[2] then
-                            local chosenPlr = findPlayer(args[2], author)
-                            
-                            if chosenPlr then
-                                if chosenPlr == plr.Name then                           
-                                    commands.abring.on = true
-                                    plr.Character.HumanoidRootPart.CFrame = author.Character.HumanoidRootPart.CFrame
-                                    commands.abring.on = false
-                                end
-                            end
+            --bring
+            if commandStart("bring", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        plr.Character.HumanoidRootPart.CFrame = author.Character.HumanoidRootPart.CFrame
+                    end
+                end
+        
+                if checkRecipient(msg, 2) ~= "all" then
+                    if plr.Name == checkRecipient(msg, 2) then
+                        if isntAuthor(plr, author) then
+                            plr.Character.HumanoidRootPart.CFrame = author.Character.HumanoidRootPart.CFrame
                         end
                     end
                 end
             end
 
-            --bring
-            if msg:lower() == prefix.."bring" then
-                if isOwner(author.Name) then
-                    print("bringing")
-
-                    commands.bring.on = true
-                    plr.Character.HumanoidRootPart.CFrame = author.Character.HumanoidRootPart.CFrame
-                    commands.bring.on = false
-                end
-            end
-
             --goto
-            if msg:find(" ") then
-                local args = split(msg)
+            if commandStart("goto", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    local args = split(msg)
 
-                if args[1]:lower() == prefix.."goto" then
-                    if isOwner(author.Name) then
-                        if isntAuthor(plr, author) then
-                            if args[2] then
-                                if findPlayer(args[2], author) then
-                                    commands.goto.on = true
-                                    plr.Character.HumanoidRootPart.CFrame = game.Workspace:FindFirstChild(findPlayer(args[2], author)).HumanoidRootPart.CFrame
-                                    commands.goto.on = false
-                                end
+                    if args[3] then
+                        if findPlayer(args[3]) then
+                            plr.Character.HumanoidRootPart.CFrame = game.Workspace:FindFirstChild(findPlayer(args[3])).HumanoidRootPart.CFrame
+                        end
+                    end
+                end
+        
+                if checkRecipient(msg, 2) ~= "all" then
+                    if plr.Name == checkRecipient(msg, 2) then
+                        local args = split(msg)
+
+                        if args[3] then
+                            if findPlayer(args[3]) then
+                                plr.Character.HumanoidRootPart.CFrame = game.Workspace:FindFirstChild(findPlayer(args[3])).HumanoidRootPart.CFrame
                             end
                         end
                     end
@@ -340,12 +395,20 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             -----------
 
             --sit
-            if msg:lower() == prefix.."sit" then
-                if isOwner(author.Name) then
+            if commandStart("sit", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
                     if isntAuthor(plr, author) then
-                        print("sitting")
-
                         plr.Character.Humanoid.Sit = true
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            plr.Character.Humanoid.Sit = true
+                        end
                     end
                 end
             end
@@ -353,42 +416,74 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             -----------
 
             --jump
-            if msg:lower() == prefix.."jump" then
-                if isOwner(author.Name) then
+            if commandStart("jump", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
                     if isntAuthor(plr, author) then
-                        print("jumping")
-
                         plr.Character.Humanoid.Jump = true
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            plr.Character.Humanoid.Jump = true
+                        end
                     end
                 end
             end
 
             --spam jump
-            if msg:find(" ") then
-                local args = split(msg)
+            if commandStart("sjump", msg, author) or commandStart("spamjump", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local args = split(msg)
 
-                if args[1]:lower() == prefix.."sjump" or args[1]:lower() == prefix.."spamjump" then
-                    if isOwner(author.Name) then
-                        if args[2] then
-                            if args[2] == "off" then
+                        if args[3] == "off" then
+                            commands.spamjump.on = false
+                        end
+
+                        if args[3] ~= "off" then
+                            commands.spamjump.on = true
+
+                            task.spawn(function()
+                                while true do
+                                    task.wait(0.01)
+                                    if commands.spamjump.on == false or stopPerm then break end
+
+                                    if isntAuthor(plr, author) then
+                                        task.wait(tonumber(tonumber(args[3])))
+                                        plr.Character.Humanoid.Jump = true
+                                    end
+                                end
+                            end)
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            local args = split(msg)
+
+                            if args[3] == "off" then
                                 commands.spamjump.on = false
-                                commands.spamjump.content = ""
-
                             end
 
-                            if args[2] ~= "off" then
+                            if args[3] ~= "off" then
                                 commands.spamjump.on = true
-                                commands.spamjump.content = tonumber(args[2])
 
                                 task.spawn(function()
                                     while true do
                                         task.wait(0.01)
-                                        if commands.spamjump.on == false or stopPerm == true then break end
+                                        if commands.spamjump.on == false or stopPerm then break end
 
                                         if isntAuthor(plr, author) then
-                                            task.wait(tonumber(commands.spamjump.content))
+                                            task.wait(tonumber(tonumber(args[3])))
                                             plr.Character.Humanoid.Jump = true
-                                            chat("test")
                                         end
                                     end
                                 end)
@@ -401,52 +496,78 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             -----------
 
             --follow
-            if msg:find(" ") then
-                local args = split(msg)
+            if commandStart("follow", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local args = split(msg)
 
-                if args[1]:lower() == prefix.."follow" then
-                    if isOwner(author.Name) then
-                        if isntAuthor(plr, author) then
-                            if args[2] then
-                                if args[2]:lower() == "no" then
-                                    print("following 2 ARGS")
+                        if args[3] then
+                            if args[3]:lower() == "no" then
+                                commands.follow.on = true
 
+                                task.spawn(function()
+                                    while task.wait() do
+                                        if commands.follow.on == false or stopPerm then break end                        
+                                        plr.Character.Humanoid:MoveTo(game.Workspace:FindFirstChild(author.Name).HumanoidRootPart.Position)
+                                    end
+                                end)
+                            else
+                                if findPlayer(args[3])  then
                                     commands.follow.on = true
-                                    commands.follow.content = author.Name
-                                    print(args[2])
 
                                     task.spawn(function()
                                         while task.wait() do
-                                            if commands.follow.on == false or stopPerm == true then break end
-                        
-                                            if game.Players:FindFirstChild(commands.follow.content) then
-                                                plr.Character.Humanoid:MoveTo(game.Workspace:FindFirstChild(commands.follow.content).HumanoidRootPart.Position)
+                                            if commands.follow.on == false or stopPerm then break end
+                                            if game.Players:FindFirstChild(findPlayer(args[3])) then
+                                                plr.Character.Humanoid:MoveTo(game.Workspace:FindFirstChild(findPlayer(args[3])).HumanoidRootPart.Position)
                                             else
                                                 commands.follow.on = false
-                                                commands.follow.content = ""
                                             end
                                         end
                                     end)
-                                else
-                                    if findPlayer(args[2], author)  then
-                                        print("following 2 ARGS")
+                                end
+                            end
+                        end
+                    end
+                end
 
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                if args[3] then
+                                    if args[3]:lower() == "no" then
                                         commands.follow.on = true
-                                        commands.follow.content = findPlayer(args[2], author)
-                                        print(findPlayer(args[2], author))
 
                                         task.spawn(function()
                                             while task.wait() do
-                                                if commands.follow.on == false or stopPerm == true then break end
-                            
-                                                if game.Players:FindFirstChild(commands.follow.content) then
-                                                    plr.Character.Humanoid:MoveTo(game.Workspace:FindFirstChild(commands.follow.content).HumanoidRootPart.Position)
+                                                if commands.follow.on == false or stopPerm then break end   
+
+                                                if game.Players:FindFirstChild(findPlayer(author.Name)) then
+                                                    plr.Character.Humanoid:MoveTo(game.Workspace:FindFirstChild(author.Name).HumanoidRootPart.Position)
                                                 else
                                                     commands.follow.on = false
-                                                    commands.follow.content = ""
                                                 end
                                             end
                                         end)
+                                    else
+                                        if findPlayer(args[3])  then
+                                            commands.follow.on = true
+
+                                            task.spawn(function()
+                                                while task.wait() do
+                                                    if commands.follow.on == false or stopPerm then break end
+                               
+                                                    if game.Players:FindFirstChild(findPlayer(args[3])) then
+                                                        plr.Character.Humanoid:MoveTo(game.Workspace:FindFirstChild(findPlayer(args[3])).HumanoidRootPart.Position)
+                                                    else
+                                                        commands.follow.on = false
+                                                    end
+                                                end
+                                            end)
+                                        end
                                     end
                                 end
                             end
@@ -456,60 +577,118 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             end
 
             --unfollow
-            if msg:lower() == prefix.."unfollow" then
-                if isOwner(author.Name) then
-                    print("unfollowing")
-
-                    commands.follow.on = false
-                    commands.follow.content = ""
-
+            if commandStart("unfollow", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
                     if isntAuthor(plr, author) then
+                        commands.follow.on = false
                         plr.Character.Humanoid:MoveTo(plr.Character.HumanoidRootPart.Position)
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            commands.follow.on = false
+                            plr.Character.Humanoid:MoveTo(plr.Character.HumanoidRootPart.Position)
+                        end
                     end
                 end
             end
 
-            --walk
-            if msg:find(" ") then
-                local args = split(msg)
 
-                if args[1]:lower() == prefix.."walk" then
-                    if isOwner(author.Name) then
-                        if args[2] then
-                            if args[2]:lower() == "front" then
-                                if args[3] then
-                                    if args[4] then
-                                        if args[4] == "z" then
+            --walk
+            if commandStart("walk", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local args = split(msg)
+
+                        if args[3] then
+                            if args[3]:lower() == "front" then
+                                if args[4] then
+                                    if args[5] then
+                                        if args[5] == "z" then
                                             if isntAuthor(plr, author) then
                                                 local hum = plr.Character.Humanoid
-                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position + Vector3.new(0, 0, args[3]))
+                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position + Vector3.new(0, 0, args[4]))
                                             end
                                         end
 
-                                        if args[4] == "x" then
+                                        if args[5] == "x" then
                                             if isntAuthor(plr, author) then
                                                 local hum = plr.Character.Humanoid
-                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position + Vector3.new(args[3], 0, 0))
+                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position + Vector3.new(args[4], 0, 0))
                                             end
                                         end
                                     end
                                 end
                             end
 
-                            if args[2]:lower() == "back" then
-                                if args[3] then
-                                    if args[4] then
-                                        if args[4] == "z" then
+                            if args[3]:lower() == "back" then
+                                if args[4] then
+                                    if args[5] then
+                                        if args[5] == "z" then
                                             if isntAuthor(plr, author) then
                                                 local hum = plr.Character.Humanoid
-                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position - Vector3.new(0, 0, args[3]))
+                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position - Vector3.new(0, 0, args[4]))
                                             end
                                         end
 
-                                        if args[4] == "x" then
+                                        if args[5] == "x" then
                                             if isntAuthor(plr, author) then
                                                 local hum = plr.Character.Humanoid
-                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position - Vector3.new(args[3], 0, 0))
+                                                hum:MoveTo(hum.parent.HumanoidRootPart.Position - Vector3.new(args[4], 0, 0))
+                                            end
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if args[3] then
+                                if args[3]:lower() == "front" then
+                                    if args[4] then
+                                        if args[5] then
+                                            if args[5] == "z" then
+                                                if isntAuthor(plr, author) then
+                                                    local hum = plr.Character.Humanoid
+                                                    hum:MoveTo(hum.parent.HumanoidRootPart.Position + Vector3.new(0, 0, args[4]))
+                                                end
+                                            end
+    
+                                            if args[5] == "x" then
+                                                if isntAuthor(plr, author) then
+                                                    local hum = plr.Character.Humanoid
+                                                    hum:MoveTo(hum.parent.HumanoidRootPart.Position + Vector3.new(args[4], 0, 0))
+                                                end
+                                            end
+                                        end
+                                    end
+                                end
+    
+                                if args[3]:lower() == "back" then
+                                    if args[4] then
+                                        if args[5] then
+                                            if args[5] == "z" then
+                                                if isntAuthor(plr, author) then
+                                                    local hum = plr.Character.Humanoid
+                                                    hum:MoveTo(hum.parent.HumanoidRootPart.Position - Vector3.new(0, 0, args[4]))
+                                                end
+                                            end
+    
+                                            if args[5] == "x" then
+                                                if isntAuthor(plr, author) then
+                                                    local hum = plr.Character.Humanoid
+                                                    hum:MoveTo(hum.parent.HumanoidRootPart.Position - Vector3.new(args[4], 0, 0))
+                                                end
                                             end
                                         end
                                     end
@@ -523,22 +702,34 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             -----------
 
             --walkspeed
-            if msg:lower():find(" ") then
-                local args = split(msg)
+            if commandStart("ws", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local args = split(msg)
 
-                if args[1]:lower() == prefix.."ws" then
-                    if isOwner(author.Name) then
-                        if args[2] then
-                            if args[2] == "normal" then
-                                commands.ws.content = "16"
-                                commands.ws.on = true
+                        if args[3] then
+                            if args[3] == "normal" then
                                 plr.Character.Humanoid.WalkSpeed = 16
-                                commands.ws.on = false
                             else
-                                commands.ws.content = args[2]
-                                commands.ws.on = true
                                 plr.Character.Humanoid.WalkSpeed = tonumber(args[2])
-                                commands.ws.on = false
+                            end
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                if args[3] then
+                                    if args[3] == "normal" then
+                                        plr.Character.Humanoid.WalkSpeed = 16
+                                    else
+                                        plr.Character.Humanoid.WalkSpeed = tonumber(args[2])
+                                    end
+                                end
                             end
                         end
                     end
@@ -547,25 +738,23 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
             -----------
 
-            --toggle ragdoll
-            if msg:lower() == prefix.."tragdoll" then
-                if isOwner(author.Name) then
+            --kill
+            if commandStart("kill", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
                     if isntAuthor(plr, author) then
-                        keypress(70)
-                        keyrelease(70)
+                        plr.Character.Humanoid.Health = 0
                     end
                 end
-            end
 
-            -----------
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
 
-            --kill
-            if msg:lower() == prefix.."kill" then
-                if isOwner(author.Name) then
-                    if isntAuthor(plr, author) then
-                        commands.kill.on = true
-                        plr.Character.Humanoid.Health = 0
-                        commands.kill.on = false
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                plr.Character.Humanoid.Health = 0
+                            end
+                        end
                     end
                 end
             end
@@ -573,51 +762,104 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             -----------
 
             --dance
-            if msg:lower() == prefix.."dance" then
-                if isOwner(author.Name) then
-                    commands.dance.on = true
-                    local num = math.random(0, 3)
+            if commandStart("dance", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local num = math.random(0, 3)
 
-                    if num == 0 then
-                        plr.Parent:Chat("/e dance")
-                    else
-                        plr.Parent:Chat("/e dance"..tostring(num))
+                        if num == 0 then
+                            plr.Parent:Chat("/e dance")
+                        else
+                            plr.Parent:Chat("/e dance"..tostring(num))
+                        end
                     end
+                end
 
-                    commands.dance.on = false
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                local num = math.random(0, 3)
+
+                                if num == 0 then
+                                    plr.Parent:Chat("/e dance")
+                                else
+                                    plr.Parent:Chat("/e dance"..tostring(num))
+                                end
+                            end
+                        end
+                    end
                 end
             end
 
             --wave
-            if msg:lower() == prefix.."wave" then
-                if isOwner(author.Name) then
-                    commands.wave.on = true
-                    plr.Parent:Chat("/e wave")
-                    commands.wave.on = false
+            if commandStart("wave", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        plr.Parent:Chat("/e wave")
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                plr.Parent:Chat("/e wave")
+                            end
+                        end
+                    end
                 end
             end
 
-            --cheer
-            if msg:lower() == prefix.."cheer" then
-                if isOwner(author.Name) then
-                    commands.cheer.on = true
-                    plr.Parent:Chat("/e cheer")
-                    commands.cheer.on = false
+            --wave
+            if commandStart("cheer", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        plr.Parent:Chat("/e cheer")
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                plr.Parent:Chat("/e cheer")
+                            end
+                        end
+                    end
                 end
             end
+
 
             --laugh
-            if msg:lower() == prefix.."laugh" then
-                if isOwner(author.Name) then
-                    commands.laugh.on = true
-                    plr.Parent:Chat("/e laugh")
-                    commands.laugh.on = false
+            if commandStart("cheer", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        plr.Parent:Chat("/e laugh")
+                    end
                 end
-            end 
 
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                plr.Parent:Chat("/e laugh")
+                            end
+                        end
+                    end
+                end
+            end
             -----------
 
-            --follow
+            --add/remove master
             if msg:find(" ") then
                 local args = split(msg)
 
@@ -626,7 +868,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                         if args[2] then
                             if args[3] then
                                 if args[3]:lower() == "add" then
-                                    local chosenPlr = findPlayer(args[2], author)
+                                    local chosenPlr = findPlayer(args[2])
 
                                     if chosenPlr ~= nil then
                                         table.insert(accounts, {chosenPlr, "master"})
@@ -636,7 +878,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
                                 if args[3]:lower() == "remove" then
                                     if findPlayer(args[2], author) then
-                                        local chosenPlr = findPlayer(args[2], author)
+                                        local chosenPlr = findPlayer(args[2])
 
                                         for i, v in pairs(accounts) do
                                             if v[1] == chosenPlr then
