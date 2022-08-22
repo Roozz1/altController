@@ -231,6 +231,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                             local cPlr = findPlayer(args[3], author)
                                             if isRecognisedUser(cPlr) then
                                                 if plr.Name == cPlr then
+                                                    print("argh yes plr name is cplr name")
                                                     commands.spam.on = true
                                                     commands.spam.content = msg:gsub(args[1].." "..args[2].." "..args[3], "")
                                                     commands.spam.amount = tonumber(args[2])
