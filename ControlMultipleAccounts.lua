@@ -166,7 +166,7 @@ function isntAuthor(plr, author)
 end
 
 function chat(msg)
-    if game.PlaceId == "176053469" then
+    if game.PlaceId == 176053469 then
         game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "Server")
     else
         game:GetService("ReplicatedStorage").DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
