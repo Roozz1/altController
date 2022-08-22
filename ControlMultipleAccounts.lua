@@ -201,7 +201,7 @@ function findPlayer(name, author)
     if closestPlrs[1] then
         return closestPlrs[1]
     else
-        return author.Name
+        return nil
     end
 end
 
@@ -673,9 +673,9 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                         if args[2] then
                             if args[3] then
                                 if args[3]:lower() == "add" then
-                                    if findPlayer(args[2], author) then
-                                        local chosenPlr = findPlayer(args[2], author)
-        
+                                    local chosenPlr = findPlayer(args[2], author)
+
+                                    if chosenPlr ~= nil then
                                         table.insert(accounts, {chosenPlr, "master"})
                                         chat("Added "..chosenPlr.." to whitelist.")
                                     end
