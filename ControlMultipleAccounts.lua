@@ -252,6 +252,14 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                     chat("PlrC | Disabled")
                     stopPerm = true
                     scrnGui:Destroy()
+
+                    local humRoot = plr.Character.HumanoidRootPart
+
+                    for _, v in pairs(humRoot:GetChildren()) do
+                        if v:IsA("BodyAngularVelocity") then
+                            v:Destroy()
+                        end
+                    end
                 end
             end
 
@@ -762,6 +770,100 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
             -----------
 
+            --spin
+            if commandStart("spin", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    local args = split(msg)
+
+                    if isntAuthor(plr, author) then
+                        if args[3] then
+                            local humRoot = plr.Character.HumanoidRootPart
+                            
+                            if not humRoot:FindFirstChild("BodyAngularVelocity") then
+                                local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
+                                bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                bodyAngularVelocity.P = 25252252
+                                bodyAngularVelocity.AngularVelocity = Vector3.new(0, tonumber(args[3]), 0)
+                            end
+                        else
+                            local humRoot = plr.Character.HumanoidRootPart
+                            
+                            if not humRoot:FindFirstChild("BodyAngularVelocity") then
+                                local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
+                                bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                bodyAngularVelocity.P = 25252252
+                                bodyAngularVelocity.AngularVelocity = Vector3.new(0, 5, 0)
+                            end
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                if args[3] then
+                                    local humRoot = plr.Character.HumanoidRootPart
+                                    
+                                    if not humRoot:FindFirstChild("BodyAngularVelocity") then
+                                        local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
+                                        bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                        bodyAngularVelocity.P = 25252252
+                                        bodyAngularVelocity.AngularVelocity = Vector3.new(0, tonumber(args[3]), 0)
+                                    end
+                                else
+                                    local humRoot = plr.Character.HumanoidRootPart
+                                    
+                                    if not humRoot:FindFirstChild("BodyAngularVelocity") then
+                                        local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
+                                        bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                        bodyAngularVelocity.P = 25252252
+                                        bodyAngularVelocity.AngularVelocity = Vector3.new(0, 5, 0)
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            --unspin
+            if commandStart("nospin", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local humRoot = plr.Character.HumanoidRootPart
+
+                        for _, v in pairs(humRoot:GetChildren()) do
+                            if v:IsA("BodyAngularVelocity") then
+                                v:Destroy()
+                            end
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                local humRoot = plr.Character.HumanoidRootPart
+
+                                for _, v in pairs(humRoot:GetChildren()) do
+                                    if v:IsA("BodyAngularVelocity") then
+                                        v:Destroy()
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            -----------
+
             --dance
             if commandStart("dance", msg, author) then
                 if checkRecipient(msg, 2) == "all" then
@@ -816,7 +918,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                 end
             end
 
-            --wave
+            --cheer
             if commandStart("cheer", msg, author) then
                 if checkRecipient(msg, 2) == "all" then
                     if isntAuthor(plr, author) then
@@ -839,7 +941,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
 
             --laugh
-            if commandStart("cheer", msg, author) then
+            if commandStart("laugh", msg, author) then
                 if checkRecipient(msg, 2) == "all" then
                     if isntAuthor(plr, author) then
                         plr.Parent:Chat("/e laugh")
