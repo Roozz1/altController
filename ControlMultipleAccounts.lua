@@ -68,6 +68,10 @@ local commands = {
     spamjump = {
         on = false,
     },
+
+    spamActivate = {
+        on = false,
+    },
 }
 
 local prefix = "!"
@@ -964,6 +968,200 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
             end
             -----------
 
+            --equip tool
+            if commandStart("equip", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local args = split(msg)
+
+                        if args[3] then
+                            local count = 0
+                            
+                            for _, v in pairs(plr.Backpack:GetChildren()) do
+                                print("for loop")
+                                count = count + 1
+
+                                if count == tonumber(args[3]) then
+                                    v.Parent = plr.Character
+                                end
+                            end
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                if args[3] then
+                                    local count = 0
+                            
+                                    for _, v in pairs(plr.Backpack:GetChildren()) do
+                                        print("for loop")
+                                        count = count + 1
+
+                                        if count == tonumber(args[3]) then
+                                            v.Parent = plr.Character
+                                        end
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            --unequip tool
+            if commandStart("unequip", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        for _, v in pairs(plr.Character:GetChildren()) do
+                            if v:IsA("Tool") then
+                                v.Parent = plr.Backpack
+                            end
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                for _, v in pairs(plr.Character:GetChildren()) do
+                                    if v:IsA("Tool") then
+                                        v.Parent = plr.Backpack
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            --activate tool
+            if commandStart("activate", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local char = plr.Character
+
+                        for _, v in pairs(char:GetChildren()) do
+                            if v:IsA("Tool") then
+                                mouse1click()
+                            end
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                local char = plr.Character
+
+                                for _, v in pairs(char:GetChildren()) do
+                                    if v:IsA("Tool") then
+                                        mouse1click()
+                                    end
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+
+            --spam activate
+            if commandStart("sactivate", msg, author) or commandStart("spamactivate", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        local args = split(msg)
+                        local char = plr.Character
+
+                        if args[3] and args[3] == "off" then
+                            commands.spamActivate.on = false
+                        else
+                            spawn(function()
+                                while true do
+                                   if not commands.spamActivate or stopPerm then break end
+                                   for _, v in pairs(char:GetChildren()) do
+                                        if v:IsA("Tool") then
+                                            mouse1click()
+                                        end
+                                    end
+                                    wait(tonumber(args[3]))
+                                end
+                            end)
+                        end
+
+                        if not args[3] then
+                            spawn(function()
+                                while true do
+                                   if not commands.spamActivate or stopPerm then break end
+                                   for _, v in pairs(char:GetChildren()) do
+                                        if v:IsA("Tool") then
+                                            mouse1click()
+                                        end
+                                    end
+                                    wait(tonumber(args[3]))
+                                end
+                            end)
+                        end
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    local args = split(msg)
+
+                    if findPlayer(args[2]) then
+                        if findPlayer(args[2]) == plr.Name then
+                            if isntAuthor(plr, author) then
+                                local char = plr.Character
+
+                                if args[3] and args[3] == "off" then
+                                    commands.spamActivate.on = false
+                                else
+                                    spawn(function()
+                                        while true do
+                                        if not commands.spamActivate then break end
+                                        for _, v in pairs(char:GetChildren()) do
+                                                if v:IsA("Tool") then
+                                                    v:Activate()
+                                                    wait()
+                                                    v:Deactivate()
+                                                end
+                                            end
+                                            wait(tonumber(args[3]))
+                                        end
+                                    end)
+                                end
+
+                                if not args[3] then
+                                    spawn(function()
+                                        while true do
+                                        if not commands.spamActivate then break end
+                                        for _, v in pairs(char:GetChildren()) do
+                                                if v:IsA("Tool") then
+                                                    v:Activate()
+                                                    wait()
+                                                    v:Deactivate()
+                                                end
+                                            end
+                                            wait(tonumber(args[3]))
+                                        end
+                                    end)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+            -----------
+
             --add/remove master
             if msg:find(" ") then
                 local args = split(msg)
@@ -1004,11 +1202,12 @@ end)
 
 -----------------------------------------------
 --anti afk
-local vu = game:GetService("VirtualUser")
-game:GetService("Players").LocalPlayer.Idled:connect(function()
-   vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
-   wait(1)
-   vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+local virtualUser = game:GetService("VirtualUser")
+
+plr.Idled:Connect(function()
+    virtualUser:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    wait(1)
+    virtualUser:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
 end)
 
 --[[
