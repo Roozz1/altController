@@ -1050,6 +1050,9 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
                         for _, v in pairs(char:GetChildren()) do
                             if v:IsA("Tool") then
+                                v:Activate()
+                                mousemoverel(0.5, 0.5)
+                                wait()
                                 mouse1click()
                             end
                         end
@@ -1065,7 +1068,10 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                 local char = plr.Character
 
                                 for _, v in pairs(char:GetChildren()) do
-                                    if v:IsA("Tool") then
+                                    if v:IsA("Tool") then        
+                                        v:Activate()     
+                                        mousemoverel(0.5, 0.5)
+                                        wait()
                                         mouse1click()
                                     end
                                 end
@@ -1085,11 +1091,16 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                         if args[3] and args[3] == "off" then
                             commands.spamActivate.on = false
                         else
+                            commands.spamActivate.on = true
                             spawn(function()
                                 while true do
-                                   if not commands.spamActivate or stopPerm then break end
+                                   if not commands.spamActivate.on or stopPerm then break end
+                                   print("s activate loop")
                                    for _, v in pairs(char:GetChildren()) do
                                         if v:IsA("Tool") then
+                                            v:Activate()
+                                            mousemoverel(0.5, 0.5)
+                                            wait()
                                             mouse1click()
                                         end
                                     end
@@ -1099,11 +1110,15 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                         end
 
                         if not args[3] then
+                            commands.spamActivate.on = true
                             spawn(function()
                                 while true do
-                                   if not commands.spamActivate or stopPerm then break end
+                                   if not commands.spamActivate.on or stopPerm then break end
                                    for _, v in pairs(char:GetChildren()) do
                                         if v:IsA("Tool") then
+                                            v:Activate()
+                                            mousemoverel(0.5, 0.5)
+                                            wait()
                                             mouse1click()
                                         end
                                     end
@@ -1125,14 +1140,16 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                 if args[3] and args[3] == "off" then
                                     commands.spamActivate.on = false
                                 else
+                                    commands.spamActivate.on = true
                                     spawn(function()
                                         while true do
-                                        if not commands.spamActivate then break end
-                                        for _, v in pairs(char:GetChildren()) do
+                                            if not commands.spamActivate.on then break end
+                                            for _, v in pairs(char:GetChildren()) do
                                                 if v:IsA("Tool") then
                                                     v:Activate()
+                                                    mousemoverel(0.5, 0.5)
                                                     wait()
-                                                    v:Deactivate()
+                                                    mouse1click()
                                                 end
                                             end
                                             wait(tonumber(args[3]))
@@ -1141,14 +1158,16 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                 end
 
                                 if not args[3] then
+                                    commands.spamActivate.on = true
                                     spawn(function()
                                         while true do
-                                        if not commands.spamActivate then break end
-                                        for _, v in pairs(char:GetChildren()) do
+                                            if not commands.spamActivate.on then break end
+                                            for _, v in pairs(char:GetChildren()) do
                                                 if v:IsA("Tool") then
                                                     v:Activate()
+                                                    mousemoverel(0.5, 0.5)
                                                     wait()
-                                                    v:Deactivate()
+                                                    mouse1click()
                                                 end
                                             end
                                             wait(tonumber(args[3]))
