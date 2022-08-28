@@ -783,7 +783,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                             
                             if not humRoot:FindFirstChild("BodyAngularVelocity") then
                                 local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
-                                bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                bodyAngularVelocity.MaxTorque = Vector3.new(0, 12515151512, 0)
                                 bodyAngularVelocity.P = 25252252
                                 bodyAngularVelocity.AngularVelocity = Vector3.new(0, tonumber(args[3]), 0)
                             end
@@ -792,7 +792,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                             
                             if not humRoot:FindFirstChild("BodyAngularVelocity") then
                                 local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
-                                bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                bodyAngularVelocity.MaxTorque = Vector3.new(0, 12515151512, 0)
                                 bodyAngularVelocity.P = 25252252
                                 bodyAngularVelocity.AngularVelocity = Vector3.new(0, 5, 0)
                             end
@@ -811,7 +811,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                     
                                     if not humRoot:FindFirstChild("BodyAngularVelocity") then
                                         local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
-                                        bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                        bodyAngularVelocity.MaxTorque = Vector3.new(0, 12515151512, 0)
                                         bodyAngularVelocity.P = 25252252
                                         bodyAngularVelocity.AngularVelocity = Vector3.new(0, tonumber(args[3]), 0)
                                     end
@@ -820,7 +820,7 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                     
                                     if not humRoot:FindFirstChild("BodyAngularVelocity") then
                                         local bodyAngularVelocity = Instance.new("BodyAngularVelocity", humRoot)
-                                        bodyAngularVelocity.MaxTorque = Vector3.new(12515151512, 12515151512, 12515151512)
+                                        bodyAngularVelocity.MaxTorque = Vector3.new(0, 12515151512, 0)
                                         bodyAngularVelocity.P = 25252252
                                         bodyAngularVelocity.AngularVelocity = Vector3.new(0, 5, 0)
                                     end
