@@ -224,6 +224,7 @@ textLabel.Position = UDim2.new(0, 0, 0, 0)
 
 --COMMANDS
 chat("Enabled | "..plr.Name.." (@"..plr.DisplayName..")")
+wait()
 chat("FPS: "..tostring(game.Workspace:GetRealPhysicsFPS()))
 
  --[[
