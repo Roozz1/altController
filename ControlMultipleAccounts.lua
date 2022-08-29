@@ -202,6 +202,22 @@ function commandStart(cmdName, msg, author)
     end
 end
 
+--make http request
+function getRequest(link)
+    local hp = syn.request
+    local main = hp(
+        {
+            Url = link,  
+            Method = "GET"
+        }
+    )
+  
+    content = main.Body
+    content = game.HttpService:JSONDecode(content)
+  
+    return content
+end
+
 -----------------------------------------------
 
 --//Main\\--
@@ -358,6 +374,23 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
                         if isntAuthor(plr, author) then
                             chat(table.concat(args, " "))
+                        end
+                    end
+                end
+            end
+
+            --say random quote         
+            if commandStart("sayquote", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    if isntAuthor(plr, author) then
+                        chat(getRequest("https://api.quotable.io/random").content)
+                    end
+                end
+
+                if checkRecipient(msg, 2) ~= "all" then
+                    if plr.Name == checkRecipient(msg, 2) then
+                        if isntAuthor(plr, author) then
+                            chat(getRequest("https://api.quotable.io/random").content)
                         end
                     end
                 end
