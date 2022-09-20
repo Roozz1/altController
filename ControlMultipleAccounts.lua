@@ -94,6 +94,30 @@ function isOwner(user)
     return nil
 end
 
+function getAllAltsInServer()
+    local list = {}
+
+    for _, v in pairs(game.Players:GetChildren()) do
+        for i, v2 in pairs(accounts) do
+            if v.Name == v2[1] then
+                table.insert(list, {v.Name, i})
+            end
+        end
+    end
+
+    return list
+end
+
+function getAltIndexInServer()
+    local list = getAllAltsInServer()
+
+    for i, v in pairs(list) do
+        if plr.Name == v[1] then
+            return i
+        end
+    end
+end
+
 function isntAuthor(plr, author)
     if plr.UserId == author.UserId then
         print(plr.Name.." | "..author.Name)
@@ -242,10 +266,12 @@ textLabel.Text = plr.Name.." (@"..plr.DisplayName..")"
 textLabel.Size = UDim2.new(1, 0, 0.04, 0)
 textLabel.Position = UDim2.new(0, 0, 0, 0)
 
---COMMANDS
+--Startup
 chat("Enabled | "..plr.Name.." (@"..plr.DisplayName..")")
-wait(5)
-chat("FPS: "..tostring(math.floor(game.Workspace:GetRealPhysicsFPS())))
+spawn(function()
+    wait(5)
+    chat("FPS: "..tostring(math.floor(game.Workspace:GetRealPhysicsFPS())))
+end)
 
  --[[
    ----COMMAND EXAMPLE----
@@ -262,6 +288,50 @@ chat("FPS: "..tostring(math.floor(game.Workspace:GetRealPhysicsFPS())))
     end
 ]]
 
+--Optimizations
+if not isOwner(plr.Name) then
+    print("not master")
+    UserSettings():GetService("UserGameSettings").MasterVolume = 0
+
+    ----optimization
+    --removing lights
+    for _, v in pairs(game.Workspace:GetDescendants()) do
+        if v.ClassName:lower():find("light") then
+            v:Destroy()
+            print("found light, destroying | "..v.Name.." | "..v:GetFullName())
+        end
+    end
+
+    --remove images
+    for _, v in pairs(game.Workspace:GetDescendants()) do
+        if v.ClassName:lower():find("decal") then
+            v:Destroy()
+            print("found decal, destroying | "..v.Name.." | "..v:GetFullName())
+        end
+
+        if v.ClassName:lower():find("texture") then
+            v:Destroy()
+            print("found texture, destroying | "..v.Name.." | "..v:GetFullName())
+        end
+
+        if v.ClassName:lower():find("surfacegui") then
+            v:Destroy()
+            print("found surfacegui, destroying | "..v.Name.." | "..v:GetFullName())
+        end
+    end
+
+    --set quality level
+    UserSettings():GetService("UserGameSettings").SavedQualityLevel = Enum.SavedQualitySetting.QualityLevel1
+
+    --disabling shadows
+    game.Lighting.GlobalShadows = false
+    game.Lighting.ShadowSoftness = 0
+
+    --setting time to night
+    game.Lighting.ClockTime = 0
+end
+
+--Commands
 game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClientEvent:Connect(function(object)
     if not stopPerm then
         local msg = object.Message
@@ -415,6 +485,37 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                 end
             end
 
+            --line up
+            if commandStart("line", msg, author) then
+                print("line command")
+                if isntAuthor(plr, author) then
+                    print("isnt author")
+                    local args = split(msg)
+                    
+                    if args[2] then
+                        print("args 2")
+                        local fList = getAllAltsInServer()
+                        local list = {}
+                        
+                        for _, v in pairs(fList) do
+                            print("creating list")
+                            table.insert(list, v[1])
+                        end
+
+                        for i, v in pairs(list) do
+                            print("creating list")
+                            if v == plr.Name then
+                                print("yes")
+                                pcall(function()
+                                    
+                                    plr.Character.HumanoidRootPart.CFrame = game.Players:FindFirstChild(list[i - 1][1]).Character.HumanoidRootPart.CFrame * (plr.Character.HumanoidRootPart.CFrame.LookVector * -1) * tonumber(args[2])
+                                end)
+                            end
+                        end
+                    end
+                end        
+            end
+
             --goto
             if commandStart("goto", msg, author) then
                 if checkRecipient(msg, 2) == "all" then
@@ -500,10 +601,8 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                                     task.wait(0.01)
                                     if commands.spamjump.on == false or stopPerm then break end
 
-                                    if isntAuthor(plr, author) then
-                                        task.wait(tonumber(tonumber(args[3])))
-                                        plr.Character.Humanoid.Jump = true
-                                    end
+                                    task.wait(tonumber(tonumber(args[3])))
+                                    plr.Character.Humanoid.Jump = true
                                 end
                             end)
                         end
@@ -523,16 +622,14 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
 
                             if args[3] ~= "off" then
                                 commands.spamjump.on = true
-
+    
                                 task.spawn(function()
                                     while true do
                                         task.wait(0.01)
                                         if commands.spamjump.on == false or stopPerm then break end
-
-                                        if isntAuthor(plr, author) then
-                                            task.wait(tonumber(tonumber(args[3])))
-                                            plr.Character.Humanoid.Jump = true
-                                        end
+    
+                                        task.wait(tonumber(tonumber(args[3])))
+                                        plr.Character.Humanoid.Jump = true
                                     end
                                 end)
                             end
