@@ -53,7 +53,7 @@ local accounts = {
     {"M1ck4l5Rpi08zOrW", "follower"},
     {"OQ5GBccWo1yqWV0a", "follower"},
     {"OQl7UzbIlnp742Cx", "follower"},
-    {"HNttvt9uYG6DwP5U", "follower"},
+    {"HNttvt9uYG6DwP5U", "master"},
 }   
 
 local commands = {
