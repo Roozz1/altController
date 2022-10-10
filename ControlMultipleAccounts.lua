@@ -72,9 +72,14 @@ local commands = {
     spamActivate = {
         on = false,
     },
+
+    spamHeadTP = {
+        on = false,
+    },
 }
 
 local prefix = "!"
+local defaultGrav = game.Workspace.Gravity
 
 --//Functions\\--
 function isOwner(user)
@@ -535,6 +540,165 @@ game.ReplicatedStorage.DefaultChatSystemChatEvents.OnMessageDoneFiltering.OnClie
                         if args[3] then
                             if findPlayer(args[3]) then
                                 plr.Character.HumanoidRootPart.CFrame = game.Workspace:FindFirstChild(findPlayer(args[3])).HumanoidRootPart.CFrame
+                            end
+                        end
+                    end
+                end
+            end
+
+            --loop headtp
+            if commandStart("headtp", msg, author) then
+                if checkRecipient(msg, 2) == "all" then
+                    local args = split(msg)
+
+                    if args[3] then
+                        if args[4] then
+                            if args[4]:lower() ~= "off" then
+                                if findPlayer(args[3]) then
+                                    commands.spamHeadTP.on = true
+                                    local alignPart
+
+                                    if not game.Workspace:FindFirstChild("AlignPart") then
+                                        alignPart = Instance.new("Part", workspace)
+                                        alignPart.CanCollide = false
+                                        alignPart.Transparency = 1
+                                        alignPart.Name = "AlignPart"
+                                    else
+                                        alignPart = game.Workspace:FindFirstChild("AlignPart")
+                                    end
+
+                                    local alignOrientation = Instance.new("AlignOrientation", plr.Character:WaitForChild("HumanoidRootPart"))
+                                    alignOrientation.Name = "React"
+
+                                    local a1 = Instance.new("Attachment", plr.Character.HumanoidRootPart)
+                                    a1.Name = "Main1"
+                                    local a2 = Instance.new("Attachment", game.Players:FindFirstChild(findPlayer(args[3])).Character.Head)
+                                    a2.Name = "Main2"
+
+                                    local hum = plr.Character:WaitForChild("Humanoid")
+                                    hum.PlatformStand = true
+    
+                                    alignOrientation.Attachment0 = a1
+                                    alignOrientation.Attachment1 = a2
+                                    alignOrientation.RigidityEnabled = true
+
+                                    game.Workspace.Gravity = 0
+
+                                    spawn(function()
+                                        local head = game.Players:FindFirstChild(findPlayer(args[3])).Character:WaitForChild("Head")
+
+                                        while wait() do
+                                            if commands.spamHeadTP.on == false then break end
+                                            plr.Character:WaitForChild("HumanoidRootPart").CFrame = head.CFrame
+                                        end
+                                        return nil
+                                    end)
+                                end
+                            elseif args[4]:lower() == "off" then
+                                commands.spamHeadTP.on = false
+                                game.Workspace.Gravity = defaultGrav
+
+                                if plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("React") then
+                                    plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("React"):Destroy()
+                                end
+
+                                if plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("Main1") then
+                                    plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("Main1"):Destroy()
+                                end
+
+                                for i, v in pairs(game.Players:GetChildren()) do
+                                    if v:IsA("Player") then
+                                        if v.Character:WaitForChild("Head"):FindFirstChild("Main2") then
+                                            v.Character:WaitForChild("Head"):FindFirstChild("Main2"):Destroy()
+                                        end
+                                    end
+                                end
+
+                                if game.Workspace:FindFirstChild("AlignPart") then
+                                    game.Workspace:WaitForChild("AlignPart"):Destroy()
+                                end
+
+                                local hum = plr.Character:WaitForChild("Humanoid")
+                                hum.PlatformStand = false
+                            end
+                        end
+                    end
+                end
+        
+                if checkRecipient(msg, 2) ~= "all" then
+                    if plr.Name == checkRecipient(msg, 2) then
+                        local args = split(msg)
+
+                        if args[3] then
+                            if args[4] then
+                                if args[4]:lower() ~= "off" then
+                                    if findPlayer(args[3]) then
+                                        commands.spamHeadTP.on = true
+                                        local alignPart
+    
+                                        if not game.Workspace:FindFirstChild("AlignPart") then
+                                            alignPart = Instance.new("Part", workspace)
+                                            alignPart.CanCollide = false
+                                            alignPart.Transparency = 1
+                                            alignPart.Name = "AlignPart"
+                                        else
+                                            alignPart = game.Workspace:FindFirstChild("AlignPart")
+                                        end
+    
+                                        local alignOrientation = Instance.new("AlignOrientation", plr.Character:WaitForChild("HumanoidRootPart"))
+                                        alignOrientation.Name = "React"
+    
+                                        local a1 = Instance.new("Attachment", plr.Character.HumanoidRootPart)
+                                        a1.Name = "Main1"
+                                        local a2 = Instance.new("Attachment", game.Players:FindFirstChild(findPlayer(args[3])).Character.Head)
+                                        a2.Name = "Main2"
+    
+                                        local hum = plr.Character:WaitForChild("Humanoid")
+                                        hum.PlatformStand = true
+        
+                                        alignOrientation.Attachment0 = a1
+                                        alignOrientation.Attachment1 = a2
+                                        alignOrientation.RigidityEnabled = true
+
+                                        game.Workspace.Gravity = 0             
+    
+                                        spawn(function()
+                                            local head = game.Players:FindFirstChild(findPlayer(args[3])).Character:WaitForChild("Head")
+    
+                                            while wait() do
+                                                if commands.spamHeadTP.on == false then break end
+                                                plr.Character:WaitForChild("HumanoidRootPart").CFrame = head.CFrame
+                                            end
+                                            return nil
+                                        end)
+                                    end
+                                elseif args[4]:lower() == "off" then
+                                    commands.spamHeadTP.on = false
+                                    game.Workspace.Gravity = defaultGrav
+    
+                                    if plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("React") then
+                                        plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("React"):Destroy()
+                                    end
+    
+                                    if plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("Main1") then
+                                        plr.Character:WaitForChild("HumanoidRootPart"):FindFirstChild("Main1"):Destroy()
+                                    end
+    
+                                    for i, v in pairs(game.Players:GetChildren()) do
+                                        if v:IsA("Player") then
+                                            if v.Character:WaitForChild("Head"):FindFirstChild("Main2") then
+                                                v.Character:WaitForChild("Head"):FindFirstChild("Main2"):Destroy()
+                                            end
+                                        end
+                                    end
+    
+                                    if game.Workspace:FindFirstChild("AlignPart") then
+                                        game.Workspace:WaitForChild("AlignPart"):Destroy()
+                                    end
+    
+                                    local hum = plr.Character:WaitForChild("Humanoid")
+                                    hum.PlatformStand = false
+                                end
                             end
                         end
                     end
